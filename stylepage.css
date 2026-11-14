@@ -1,6 +1,7 @@
+
 /* ==========================================================================
    MARSWALK ROUTE GUIDE
-
+ 
    VOICE:   a crew tablet on Mars: calm, exact, readable in a glove.
    IDEA:    the waypoint tracker on an astronaut's suit tablet: pick a stop,
             see how far, how cold, how safe.
@@ -8,23 +9,28 @@
             units, a dashed tracker line from YOU to the target.
    COLOUR:  Martian rust ground, unit colours from the NASA map
             (clay green, pediment teal, ridge red).
-   TYPE:    Barlow Semi Condensed + Barlow.
+   TYPE:    Fraunces (headings, big numbers) + DM Sans (everything else).
    LAYOUT:  map left, target card with three gauges right; elevation profile,
             waypoint table and the safety formula below.
    ========================================================================== */
-
-
+ 
+ 
 /* --------------------------------------------------------------------------
    1. Variables and theme
    -------------------------------------------------------------------------- */
 :root {
   color-scheme: light dark;
-
+ 
   /* Palette
      Dark Pink  #A34F5D   Cream       #E6C8A2   Light Pink #D99386
      Brown      #8E5E4A   Dark Purple #473445
      Extra shades below are tints/shades of these so text stays readable. */
-
+ 
+  /* Fonts: change these two lines to swap fonts everywhere
+     (and update the Google Fonts link in index.html to match) */
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-head: "Fraunces", Georgia, serif;
+ 
   /* Surfaces and text (light, dark) */
   --bg:    light-dark(#E6C8A2, #2B1F2A);   /* cream / deep purple */
   --panel: light-dark(#F5E7D3, #473445);   /* light cream / dark purple */
@@ -32,25 +38,25 @@
   --mute:  light-dark(#6B4636, #D99386);   /* deep brown / light pink */
   --line:  light-dark(#CFAE88, #6B506A);
   --grid:  light-dark(#ECD6B8, #583F56);
-
+ 
   /* Accent (kept the name --rust so the rest of the code still works) */
   --rust: #A34F5D;                          /* dark pink */
-
+ 
   /* Geologic units */
   --clay:  #8E5E4A;                         /* brown */
   --ped:   #A34F5D;                         /* dark pink */
   --gediz: #D99386;                         /* light pink */
-
+ 
   /* Safety status (kept as green / amber / red so the meaning is obvious) */
   --ok:   #2f9e5b;
   --warn: #d99a1e;
   --bad:  #d2403a;
 }
-
+ 
 :root[data-theme=light] { color-scheme: light; }
 :root[data-theme=dark]  { color-scheme: dark; }
-
-
+ 
+ 
 /* --------------------------------------------------------------------------
    2. Base and typography
    -------------------------------------------------------------------------- */
@@ -58,35 +64,35 @@
   box-sizing: border-box;
   min-width: 0;
 }
-
+ 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 16px/1.55 Barlow, system-ui, sans-serif;
+  font: 16px/1.55 var(--font-body);
   overflow-x: clip;
 }
-
+ 
 h1, h2, h3 {
-  font-family: "Barlow Semi Condensed", Barlow, sans-serif;
+  font-family: var(--font-head);
   line-height: 1.05;
   margin: 0;
   text-wrap: balance;
 }
-
+ 
 h1 { font-size: clamp(30px, 4vw, 44px); }
 h2 { font-size: 24px; margin-bottom: 12px; }
 h3 { font-size: 20px; }
-
+ 
 a { color: var(--rust); }
-
+ 
 .note {
   color: var(--mute);
   font-size: 14px;
   max-width: 80ch;
 }
-
-
+ 
+ 
 /* --------------------------------------------------------------------------
    3. Page layout
    -------------------------------------------------------------------------- */
@@ -95,22 +101,22 @@ a { color: var(--rust); }
   max-width: 1320px;
   margin: 0 auto;
 }
-
+ 
 header.band { padding-bottom: 10px; }
-
+ 
 .sub {
   color: var(--mute);
   margin: 6px 0 14px;
 }
-
+ 
 .main {
   display: grid;
   grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
   gap: 18px;
   padding-top: 6px;
 }
-
-
+ 
+ 
 /* --------------------------------------------------------------------------
    4. Buttons and tabs
    -------------------------------------------------------------------------- */
@@ -119,10 +125,10 @@ header.band { padding-bottom: 10px; }
   flex-wrap: wrap;
   gap: 8px;
 }
-
+ 
 .tabs button,
 .btn {
-  font: 600 15px Barlow, sans-serif;
+  font: 600 15px var(--font-body);
   min-height: 44px;
   padding: 0 16px;
   border-radius: 10px;
@@ -130,14 +136,15 @@ header.band { padding-bottom: 10px; }
   background: var(--panel);
   color: var(--ink);
   cursor: pointer;
+  transition: background-color .15s, border-color .15s, transform .1s;
 }
-
+ 
 .tabs button[aria-pressed=true] {
   background: var(--ink);
   color: var(--bg);
   border-color: var(--ink);
 }
-
+ 
 .tabs .dot {
   display: inline-block;
   width: 10px;
@@ -146,19 +153,62 @@ header.band { padding-bottom: 10px; }
   margin-right: 7px;
   vertical-align: 1px;
 }
-
+ 
 .btn.pri {
   background: var(--rust);
   border-color: var(--rust);
   color: #fff;
 }
-
+ 
+/* Hover (only on devices that can actually hover, so phones don't get stuck states) */
+@media (hover: hover) {
+  .tabs button:hover,
+  .btn:hover {
+    background: var(--grid);
+    border-color: var(--rust);
+  }
+ 
+  .tabs button[aria-pressed=true]:hover {
+    background: var(--ink);
+    border-color: var(--rust);
+    opacity: .9;
+  }
+ 
+  .btn.pri:hover {
+    background: #8A3F4D;          /* deeper dark pink */
+    border-color: #8A3F4D;
+  }
+ 
+  .btn:disabled:hover {
+    background: var(--panel);
+    border-color: var(--line);
+  }
+ 
+  .btn.pri:disabled:hover {
+    background: var(--rust);
+    border-color: var(--rust);
+  }
+}
+ 
+/* Pressed */
+.tabs button:active,
+.btn:active {
+  transform: translateY(1px);
+}
+ 
+/* Disabled (Previous / Next at the ends, "I'm at this stop" when already there) */
+.btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  transform: none;
+}
+ 
 button:focus-visible {
   outline: 3px solid var(--rust);
   outline-offset: 2px;
 }
-
-
+ 
+ 
 /* --------------------------------------------------------------------------
    5. Map and elevation profile (SVG figures)
    -------------------------------------------------------------------------- */
@@ -166,14 +216,14 @@ button:focus-visible {
   position: relative;
   min-height: 340px;
 }
-
+ 
 .fig > svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
-
+ 
 .map {
   min-height: 520px;
   background: var(--panel);
@@ -181,27 +231,27 @@ button:focus-visible {
   border-radius: 16px;
   overflow: hidden;
 }
-
+ 
 .prof {
   min-height: 200px;
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 16px;
 }
-
+ 
 /* Pulsing ring around the selected stop */
 .pulse {
   animation: p 1.6s ease-out infinite;
   transform-box: fill-box;
   transform-origin: center;
 }
-
+ 
 @keyframes p {
   from { opacity: .9; transform: scale(1); }
   to   { opacity: 0;  transform: scale(2.4); }
 }
-
-
+ 
+ 
 /* --------------------------------------------------------------------------
    6. Target card
    -------------------------------------------------------------------------- */
@@ -211,14 +261,14 @@ button:focus-visible {
   border-radius: 16px;
   padding: 18px;
 }
-
+ 
 .top {
   display: flex;
   justify-content: space-between;
   gap: 10px;
   align-items: flex-start;
 }
-
+ 
 .chip {
   display: inline-block;
   font-weight: 600;
@@ -228,16 +278,16 @@ button:focus-visible {
   color: #fff;
   white-space: nowrap;
 }
-
+ 
 /* Light pink unit needs dark text */
 .chip[style*="--gediz"] { color: #473445; }
-
+ 
 .meta {
   color: var(--mute);
   font-size: 14px;
   margin-top: 4px;
 }
-
+ 
 .haz {
   margin-top: 14px;
   padding: 10px 12px;
@@ -245,38 +295,38 @@ button:focus-visible {
   background: var(--grid);
   font-size: 15px;
 }
-
+ 
 .acts {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 14px;
 }
-
-
+ 
+ 
 /* --------------------------------------------------------------------------
    7. Horizontal gauges (.g)
    -------------------------------------------------------------------------- */
 .g { margin-top: 16px; }
-
+ 
 .g .lab {
   display: flex;
   justify-content: space-between;
   font-weight: 600;
   font-size: 15px;
 }
-
+ 
 .g .lab b {
-  font-family: "Barlow Semi Condensed", sans-serif;
+  font-family: var(--font-head);
   font-size: 22px;
   white-space: nowrap;
 }
-
+ 
 .g small {
   color: var(--mute);
   font-size: 13px;
 }
-
+ 
 .bar {
   position: relative;
   height: 14px;
@@ -285,26 +335,26 @@ button:focus-visible {
   margin-top: 6px;
   overflow: hidden;
 }
-
+ 
 .bar i {
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: 8px;
   transition: width .35s;
 }
-
-/* Temperature gradient (cold to hot) with a marker line */
+ 
+/* Temperature gradient: dark purple = cold, cream = warm */
 .temp {
-  background: linear-gradient(90deg, #473445, #A34F5D 45%, #D99386 80%, #E6C8A2);
+  background: linear-gradient(90deg, #473445, #A34F5D 50%, #D99386 80%, #E6C8A2);
 }
-
+ 
 .temp i {
   background: none;
   border-right: 4px solid var(--ink);
   border-radius: 0;
 }
-
-
+ 
+ 
 /* --------------------------------------------------------------------------
    8. Vertical gauges (.gauges / .vg / .vbar)
    -------------------------------------------------------------------------- */
@@ -315,26 +365,26 @@ button:focus-visible {
   margin-top: 16px;
   text-align: center;
 }
-
+ 
 .vg {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-
+ 
 .vg .lab {
   font-weight: 600;
   font-size: 15px;
 }
-
+ 
 .vg b {
-  font-family: "Barlow Semi Condensed", sans-serif;
+  font-family: var(--font-head);
   font-size: clamp(26px, 3vw, 34px);
   line-height: 1.1;
   white-space: nowrap;
   margin-top: 2px;
 }
-
+ 
 .vg .unit {
   font-size: 13px;
   color: var(--mute);
@@ -342,12 +392,12 @@ button:focus-visible {
   min-height: 2.6em;
   line-height: 1.3;
 }
-
+ 
 .vg small {
   color: var(--mute);
   font-size: 13px;
 }
-
+ 
 .vbar {
   position: relative;
   width: 38px;
@@ -357,7 +407,7 @@ button:focus-visible {
   overflow: hidden;
   margin: 6px 0;
 }
-
+ 
 .vbar i {
   position: absolute;
   left: 0;
@@ -366,29 +416,59 @@ button:focus-visible {
   border-radius: 12px;
   transition: height .35s;
 }
-
-/* Vertical temperature gauge: gradient with a thin marker */
+ 
+/* Vertical temperature gauge, drawn like a thermometer:
+   dark purple = cold at the bottom, cream = warm at the top.
+   The colour shows up to the current temperature; the part above it is
+   dimmed, with a bold line marking the reading. */
+.tgauge {
+  position: relative;
+  margin: 6px 0;
+}
+ 
+.tgauge .vbar { margin: 0; }
+ 
 .vbar.temp {
-  background: linear-gradient(0deg, #473445, #A34F5D 45%, #D99386 80%, #E6C8A2);
+  background: linear-gradient(0deg, #473445, #A34F5D 50%, #D99386 80%, #E6C8A2);
 }
-
+ 
 .vbar.temp i {
-  height: 4px;
-  border-radius: 2px;
-  background: var(--ink);
-  transform: translateY(2px);
+  top: 0;
+  left: 0;
+  right: 0;
+  height: auto;                 /* bottom is set from the script */
+  border: 0;
+  border-bottom: 4px solid var(--ink);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--grid) 82%, transparent);
+  box-shadow: 0 2px 0 var(--panel);   /* thin outline so the line shows on any colour */
   transition: bottom .35s;
-  left: -2px;
-  right: -2px;
 }
-
+ 
+/* Scale labels beside the thermometer */
+.tticks {
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: var(--mute);
+  white-space: nowrap;
+}
+ 
 .gnote {
   color: var(--mute);
   font-size: 13px;
   margin: 10px 0 0;
 }
-
-
+ 
+ 
 /* --------------------------------------------------------------------------
    9. Key numbers list
    -------------------------------------------------------------------------- */
@@ -400,24 +480,24 @@ button:focus-visible {
   padding: 14px 0 0;
   border-top: 1px solid var(--line);
 }
-
+ 
 .nums div {
   display: flex;
   justify-content: space-between;
   gap: 8px;
   font-size: 15px;
 }
-
+ 
 .nums dt { color: var(--mute); }
-
+ 
 .nums dd {
   margin: 0;
   font-weight: 600;
   text-align: right;
   white-space: nowrap;
 }
-
-
+ 
+ 
 /* --------------------------------------------------------------------------
    10. Safety score rules
    -------------------------------------------------------------------------- */
@@ -426,7 +506,7 @@ button:focus-visible {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px;
 }
-
+ 
 .rules div {
   background: var(--panel);
   border: 1px solid var(--line);
@@ -434,13 +514,13 @@ button:focus-visible {
   padding: 12px 14px;
   font-size: 15px;
 }
-
+ 
 .rules ul {
   margin: 6px 0 0;
   padding-left: 18px;
 }
-
-
+ 
+ 
 /* --------------------------------------------------------------------------
    11. Responsive and accessibility
    -------------------------------------------------------------------------- */
@@ -449,20 +529,23 @@ button:focus-visible {
     animation: none;
     opacity: .5;
   }
-
+ 
   .bar i,
-  .vbar i {
+  .vbar i,
+  .tabs button,
+  .btn {
     transition: none;
   }
 }
-
+ 
 /* Tablet: stack map above card */
 @media (max-width: 860px) {
   .main { grid-template-columns: minmax(0, 1fr); }
   .map  { min-height: 400px; }
 }
-
+ 
 /* Phone */
 @media (max-width: 600px) {
   .nums { grid-template-columns: minmax(0, 1fr); }
 }
+ 

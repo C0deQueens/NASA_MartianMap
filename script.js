@@ -98,14 +98,21 @@ function card(){
   $("card").innerHTML=`
   <div class="top"><div><h3>Stop ${p.i+1} · Sol ${p.sol}</h3><div class="meta">${p.date} · Segment ${p.seg}</div></div>
   <span class="chip" style="background:${u.c}">${u.n}</span></div>
-  <div class="g"><div class="lab"><span>Safety</span><b style="color:${f.c}">${f.score} · ${f.st}</b></div>
-   <div class="bar"><i style="width:${f.score}%;background:${f.c}"></i></div>
-   <small>Slope −${f.s} · Temperature −${f.t} · Visibility −${f.v} · Terrain −${f.u}</small></div>
-  <div class="g"><div class="lab"><span>Temperature</span><b>${p.t} °C</b></div>
-   <div class="bar temp"><i style="width:${tPct}%"></i></div><small>Scale −80 °C to 0 °C · ${Math.round(p.t*9/5+32)} °F</small></div>
-  <div class="g"><div class="lab"><span>Distance from you</span><b>${st.me===st.sel?"You are here":km(route)}</b></div>
-   <div class="bar"><i style="width:${route/TOTAL*100}%;background:var(--rust)"></i></div>
-   <small>Along the route, out of ${km(TOTAL)} total · straight line ${km(straight)}</small></div>
+  <div class="gauges">
+   <div class="vg"><span class="lab">Safety</span>
+    <div class="vbar"><i style="height:${f.score}%;background:${f.c}"></i></div>
+    <b style="color:${f.c}">${f.score}</b><span class="unit">${f.st}</span></div>
+   <div class="vg"><span class="lab">Temperature</span>
+    <div class="tgauge"><div class="vbar temp"><i style="bottom:${tPct}%"></i></div>
+     <div class="tticks"><span>Warm<br>0 °</span><span>−40 °</span><span>Cold<br>−80 °</span></div></div>
+    <b>${p.t} °C</b><span class="unit">${Math.round(p.t*9/5+32)} °F</span></div>
+   <div class="vg"><span class="lab">Distance</span>
+    <div class="vbar"><i style="height:${route/TOTAL*100}%;background:var(--rust)"></i></div>
+    <b>${st.me===st.sel?"Here":km(route)}</b><span class="unit">${st.me===st.sel?"You are here":"from you"}</span></div>
+  </div>
+  <p class="gnote">Safety: Slope −${f.s} · Temperature −${f.t} · Visibility −${f.v} · Terrain −${f.u}</p>
+  <p class="gnote">Temperature: the colored part rises with the temperature, from cold (dark purple) to warm (cream)</p>
+  <p class="gnote">Distance is along the route, out of ${km(TOTAL)} total · straight line ${km(straight)}</p>
   <dl class="nums">
    <div><dt>Elevation</dt><dd>${num(p.el)} m</dd></div>
    <div><dt>Climb from you</dt><dd>${dz>0?"+":""}${num(dz)} m</dd></div>
