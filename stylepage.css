@@ -6,23 +6,526 @@
     Dark Purple: 473445
     */
 
+/* ==========================================================================
+   MARSWALK ROUTE GUIDE
+
+   VOICE:   a crew tablet on Mars: calm, exact, readable in a glove.
+   IDEA:    the waypoint tracker on an astronaut's suit tablet: pick a stop,
+            see how far, how cold, how safe.
+   PICTURE: a top-down route map of lower Mount Sharp with the three geologic
+            units, a dashed tracker line from YOU to the target.
+   COLOUR:  Martian rust ground, unit colours from the NASA map
+            (clay green, pediment teal, ridge red).
+   TYPE:    Barlow Semi Condensed + Barlow.
+   LAYOUT:  map left, target card with three gauges right; elevation profile,
+            waypoint table and the safety formula below.
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1. Variables and theme
+   -------------------------------------------------------------------------- */
+:root {
+  color-scheme: light dark;
+
+  /* Surfaces and text (light, dark) */
+  --bg:    light-dark(#f4ece4, #140c0a);
+  --panel: light-dark(#fffaf6, #1f1512);
+  --ink:   light-dark(#24150f, #f4e7dd);
+  --mute:  light-dark(#76604f, #b49d8d);
+  --line:  light-dark(#e2d2c4, #3a2a24);
+  --grid:  light-dark(#ead9cb, #2a1d19);
+
+  /* Accent */
+  --rust: #c4552c;
+
+  /* Geologic units */
+  --clay:  #3e9f57;
+  --ped:   #1f9a93;
+  --gediz: #cf4339;
+
+  /* Safety status */
+  --ok:   #2f9e5b;
+  --warn: #d99a1e;
+  --bad:  #d2403a;
+}
+
+/* Manual theme override */
+:root[data-theme=light] { color-scheme: light; }
+:root[data-theme=dark]  { color-scheme: dark; }
+
+
+/* --------------------------------------------------------------------------
+   2. Base and typography
+   -------------------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
 body {
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    line-height: 1.5;
-    background-color: #edd5b4;
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.55 Barlow, system-ui, sans-serif;
+  overflow-x: clip;
 }
-.map{
-    background-color: #473445;
-    border: 1px solid #ccc;
-    height: 450px;
-    margin: 5% 5%;
 
+h1, h2, h3 {
+  font-family: "Barlow Semi Condensed", Barlow, sans-serif;
+  line-height: 1.05;
+  margin: 0;
+  text-wrap: balance;
 }
-.info{
-   display: flex;
-   justify-content: space-evenly;
-   flex-wrap: wrap;
 
+h1 { font-size: clamp(30px, 4vw, 44px); }
+h2 { font-size: 24px; margin-bottom: 12px; }
+h3 { font-size: 20px; }
+
+a { color: var(--rust); }
+
+.note {
+  color: var(--mute);
+  font-size: 14px;
+  max-width: 80ch;
+}
+
+
+/* --------------------------------------------------------------------------
+   3. Page layout
+   -------------------------------------------------------------------------- */
+.band {
+  padding: clamp(18px, 3vw, 36px) max(4vw, 16px);
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+header.band { padding-bottom: 10px; }
+
+.sub {
+  color: var(--mute);
+  margin: 6px 0 14px;
+}
+
+.main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 18px;
+  padding-top: 6px;
+}
+
+
+/* --------------------------------------------------------------------------
+   4. Buttons and tabs
+   -------------------------------------------------------------------------- */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tabs button,
+.btn {
+  font: 600 15px Barlow, sans-serif;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1.5px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.tabs button[aria-pressed=true] {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.tabs .dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: 1px;
+}
+
+.btn.pri {
+  background: var(--rust);
+  border-color: var(--rust);
+  color: #fff;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--rust);
+  outline-offset: 2px;
+}
+
+
+/* --------------------------------------------------------------------------
+   5. Map and elevation profile (SVG figures)
+   -------------------------------------------------------------------------- */
+.fig {
+  position: relative;
+  min-height: 340px;
+}
+
+.fig > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.map {
+  min-height: 520px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.prof {
+  min-height: 200px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+/* Pulsing ring around the selected stop */
+.pulse {
+  animation: p 1.6s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes p {
+  from { opacity: .9; transform: scale(1); }
+  to   { opacity: 0;  transform: scale(2.4); }
+}
+
+
+/* --------------------------------------------------------------------------
+   6. Target card
+   -------------------------------------------------------------------------- */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.chip {
+  display: inline-block;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.meta {
+  color: var(--mute);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.haz {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--grid);
+  font-size: 15px;
+}
+
+.acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+
+/* --------------------------------------------------------------------------
+   7. Horizontal gauges (.g)
+   -------------------------------------------------------------------------- */
+.g { margin-top: 16px; }
+
+.g .lab {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.g .lab b {
+  font-family: "Barlow Semi Condensed", sans-serif;
+  font-size: 22px;
+  white-space: nowrap;
+}
+
+.g small {
+  color: var(--mute);
+  font-size: 13px;
+}
+
+.bar {
+  position: relative;
+  height: 14px;
+  border-radius: 8px;
+  background: var(--grid);
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 8px;
+  transition: width .35s;
+}
+
+/* Temperature gradient (cold to hot) with a marker line */
+.temp {
+  background: linear-gradient(90deg, #3b6fd6, #69b7e6 45%, #f0c24a 80%, #e8703a);
+}
+
+.temp i {
+  background: none;
+  border-right: 4px solid var(--ink);
+  border-radius: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   8. Vertical gauges (.gauges / .vg / .vbar)
+   -------------------------------------------------------------------------- */
+.gauges {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+  text-align: center;
+}
+
+.vg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vg .lab {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.vg b {
+  font-family: "Barlow Semi Condensed", sans-serif;
+  font-size: clamp(26px, 3vw, 34px);
+  line-height: 1.1;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+.vg .unit {
+  font-size: 13px;
+  color: var(--mute);
+  font-weight: 600;
+  min-height: 2.6em;
+  line-height: 1.3;
+}
+
+.vg small {
+  color: var(--mute);
+  font-size: 13px;
+}
+
+.vbar {
+  position: relative;
+  width: 38px;
+  height: 170px;
+  border-radius: 12px;
+  background: var(--grid);
+  overflow: hidden;
+  margin: 6px 0;
+}
+
+.vbar i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 12px;
+  transition: height .35s;
+}
+
+/* Vertical temperature gauge: gradient with a thin marker */
+.vbar.temp {
+  background: linear-gradient(0deg, #3b6fd6, #69b7e6 45%, #f0c24a 80%, #e8703a);
+}
+
+.vbar.temp i {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--ink);
+  transform: translateY(2px);
+  transition: bottom .35s;
+  left: -2px;
+  right: -2px;
+}
+
+.gnote {
+  color: var(--mute);
+  font-size: 13px;
+  margin: 10px 0 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   9. Key numbers list
+   -------------------------------------------------------------------------- */
+.nums {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 14px;
+  margin: 16px 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.nums div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 15px;
+}
+
+.nums dt { color: var(--mute); }
+
+.nums dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+
+/* --------------------------------------------------------------------------
+   10. Waypoint table
+   -------------------------------------------------------------------------- */
+.scroll { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  background: var(--panel);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+th {
+  color: var(--mute);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+td.n,
+th.n {
+  text-align: right;
+  white-space: nowrap;
+}
+
+tbody tr { cursor: pointer; }
+
+tbody tr:hover,
+tbody tr.on {
+  background: var(--grid);
+}
+
+
+/* --------------------------------------------------------------------------
+   11. Safety score rules
+   -------------------------------------------------------------------------- */
+.rules {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.rules div {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+}
+
+.rules ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+
+/* --------------------------------------------------------------------------
+   12. Responsive and accessibility
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+    opacity: .5;
+  }
+
+  .bar i,
+  .vbar i {
+    transition: none;
+  }
+}
+
+/* Tablet: stack map above card */
+@media (max-width: 860px) {
+  .main { grid-template-columns: minmax(0, 1fr); }
+  .map  { min-height: 400px; }
+}
+
+/* Phone: table becomes stacked cards */
+@media (max-width: 600px) {
+  table { font-size: 13px; }
+
+  .stack thead { display: none; }
+
+  .stack tr {
+    display: grid;
+    padding-block: 10px;
+  }
+
+  .stack td {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border: 0;
+    padding: 3px 10px;
+  }
+
+  .stack td::before {
+    content: attr(data-l);
+    color: var(--mute);
+  }
+
+  .nums { grid-template-columns: minmax(0, 1fr); }
 }
