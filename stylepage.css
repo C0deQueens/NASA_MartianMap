@@ -1,11 +1,3 @@
-/* Color Palette 
-    Dark Pink: A34F5D
-    Cream: E6C8A2
-    Light Pink: D99386
-    Brown: 8E5E4A
-    Dark Purple: 473445
-    */
-
 /* ==========================================================================
    MARSWALK ROUTE GUIDE
 
@@ -28,29 +20,33 @@
 :root {
   color-scheme: light dark;
 
-  /* Surfaces and text (light, dark) */
-  --bg:    light-dark(#f4ece4, #140c0a);
-  --panel: light-dark(#fffaf6, #1f1512);
-  --ink:   light-dark(#24150f, #f4e7dd);
-  --mute:  light-dark(#76604f, #b49d8d);
-  --line:  light-dark(#e2d2c4, #3a2a24);
-  --grid:  light-dark(#ead9cb, #2a1d19);
+  /* Palette
+     Dark Pink  #A34F5D   Cream       #E6C8A2   Light Pink #D99386
+     Brown      #8E5E4A   Dark Purple #473445
+     Extra shades below are tints/shades of these so text stays readable. */
 
-  /* Accent */
-  --rust: #c4552c;
+  /* Surfaces and text (light, dark) */
+  --bg:    light-dark(#E6C8A2, #2B1F2A);   /* cream / deep purple */
+  --panel: light-dark(#F5E7D3, #473445);   /* light cream / dark purple */
+  --ink:   light-dark(#473445, #E6C8A2);   /* dark purple / cream */
+  --mute:  light-dark(#6B4636, #D99386);   /* deep brown / light pink */
+  --line:  light-dark(#CFAE88, #6B506A);
+  --grid:  light-dark(#ECD6B8, #583F56);
+
+  /* Accent (kept the name --rust so the rest of the code still works) */
+  --rust: #A34F5D;                          /* dark pink */
 
   /* Geologic units */
-  --clay:  #3e9f57;
-  --ped:   #1f9a93;
-  --gediz: #cf4339;
+  --clay:  #8E5E4A;                         /* brown */
+  --ped:   #A34F5D;                         /* dark pink */
+  --gediz: #D99386;                         /* light pink */
 
-  /* Safety status */
+  /* Safety status (kept as green / amber / red so the meaning is obvious) */
   --ok:   #2f9e5b;
   --warn: #d99a1e;
   --bad:  #d2403a;
 }
 
-/* Manual theme override */
 :root[data-theme=light] { color-scheme: light; }
 :root[data-theme=dark]  { color-scheme: dark; }
 
@@ -233,6 +229,9 @@ button:focus-visible {
   white-space: nowrap;
 }
 
+/* Light pink unit needs dark text */
+.chip[style*="--gediz"] { color: #473445; }
+
 .meta {
   color: var(--mute);
   font-size: 14px;
@@ -296,7 +295,7 @@ button:focus-visible {
 
 /* Temperature gradient (cold to hot) with a marker line */
 .temp {
-  background: linear-gradient(90deg, #3b6fd6, #69b7e6 45%, #f0c24a 80%, #e8703a);
+  background: linear-gradient(90deg, #473445, #A34F5D 45%, #D99386 80%, #E6C8A2);
 }
 
 .temp i {
@@ -370,7 +369,7 @@ button:focus-visible {
 
 /* Vertical temperature gauge: gradient with a thin marker */
 .vbar.temp {
-  background: linear-gradient(0deg, #3b6fd6, #69b7e6 45%, #f0c24a 80%, #e8703a);
+  background: linear-gradient(0deg, #473445, #A34F5D 45%, #D99386 80%, #E6C8A2);
 }
 
 .vbar.temp i {
@@ -420,47 +419,7 @@ button:focus-visible {
 
 
 /* --------------------------------------------------------------------------
-   10. Waypoint table
-   -------------------------------------------------------------------------- */
-.scroll { overflow-x: auto; }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 15px;
-  background: var(--panel);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-th, td {
-  padding: 9px 10px;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-}
-
-th {
-  color: var(--mute);
-  font-weight: 600;
-  font-size: 14px;
-}
-
-td.n,
-th.n {
-  text-align: right;
-  white-space: nowrap;
-}
-
-tbody tr { cursor: pointer; }
-
-tbody tr:hover,
-tbody tr.on {
-  background: var(--grid);
-}
-
-
-/* --------------------------------------------------------------------------
-   11. Safety score rules
+   10. Safety score rules
    -------------------------------------------------------------------------- */
 .rules {
   display: grid;
@@ -483,7 +442,7 @@ tbody tr.on {
 
 
 /* --------------------------------------------------------------------------
-   12. Responsive and accessibility
+   11. Responsive and accessibility
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .pulse {
@@ -503,29 +462,7 @@ tbody tr.on {
   .map  { min-height: 400px; }
 }
 
-/* Phone: table becomes stacked cards */
+/* Phone */
 @media (max-width: 600px) {
-  table { font-size: 13px; }
-
-  .stack thead { display: none; }
-
-  .stack tr {
-    display: grid;
-    padding-block: 10px;
-  }
-
-  .stack td {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    border: 0;
-    padding: 3px 10px;
-  }
-
-  .stack td::before {
-    content: attr(data-l);
-    color: var(--mute);
-  }
-
   .nums { grid-template-columns: minmax(0, 1fr); }
 }
