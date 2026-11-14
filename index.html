@@ -1,48 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Code Queens Martian Map</title>
-        <link href="stylepage.css" rel="stylesheet">
-    </head> 
-    <body>
-        <section >
-            <div class="map" id="map">
-                <p>map</p>
-            </div>
-        </section>
-        <section class="info" id="info">
-            <div class="safety" id="safety">
-                <div>
-                    <p>Temperature (Celsius):</p>
-                    <p>TEMP</p>
-                </div>
-                <div>
-                    <p>UV Radiation Level:</p>
-                    <p>UV</p>
-                </div>
-                <div>
-                    <p>Visibility (km):</p>
-                    <p>VISIBILITY</p>
-                </div>
-                <div>
-                    <p>Hazards:</p>
-                    <p>HAZARD</p>
-                </div>
-            </div>
-            <div class = "info" id="info">
-                <div>
-                    <p>Terrain: </p>
-                    <p>TERRAIN</p>
-                </div>
-                <div>
-                    <p>Distance away (km):</p>
-                    <p>DISTANCE</p>
-                </div>
-            </div>
-        </section>
-    </body> 
-    <footer>
-        <p>&copy; 2026 Code Queens. All rights reserved.</p>
-    </footer>  
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marswalk Route Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="band">
+  <h1>Marswalk Route Guide: lower Mount Sharp</h1>
+  <p class="sub">Gale Crater · 12 waypoints along Curiosity's path, sols 2742–3703 · tap a stop to see its numbers</p>
+  <div class="tabs" id="tabs"></div>
+</header>
+
+<section class="band main" style="padding-top:8px">
+  <div class="fig map" id="mapBox"><svg id="map" role="img" aria-label="Route map of the three segments"></svg></div>
+  <aside class="card" id="card" aria-live="polite"></aside>
+</section>
+
+<section class="band">
+  <h2>Elevation along the route</h2>
+  <div class="fig prof"><svg id="prof" role="img" aria-label="Elevation profile"></svg></div>
+</section>
+
+<section class="band">
+  <h2>All waypoints</h2>
+  <div class="scroll"><table class="stack"><thead><tr>
+    <th>Stop</th><th>Sol</th><th>Date</th><th>Unit</th><th class="n">Elevation</th><th class="n">Slope in</th><th class="n">Temp</th><th class="n">Visibility</th><th class="n">Safety</th>
+  </tr></thead><tbody id="rows"></tbody></table></div>
+</section>
+
+<section class="band">
+  <h2>How the safety score works</h2>
+  <p class="note" style="margin-top:0">Every stop starts at 100. Points are taken off for the conditions below. 80 and up is <b style="color:var(--ok)">Safe</b>, 50–79 is <b style="color:var(--warn)">Caution</b>, under 50 is <b style="color:var(--bad)">Danger</b>. Slope is calculated from the elevation change and distance of the leg walked to reach the stop.</p>
+  <div class="rules">
+    <div><b>Slope</b><ul><li>under 5° → 0</li><li>5–10° → −10</li><li>10–15° → −20</li><li>15° or more → −35</li></ul></div>
+    <div><b>Temperature</b><ul><li>−40 °C or warmer → 0</li><li>−40 to −60 °C → −5</li><li>below −60 °C → −15</li></ul></div>
+    <div><b>Visibility</b><ul><li>4 km or more → 0</li><li>under 4 km → −10</li></ul></div>
+    <div><b>Terrain</b><ul><li>Clay-bearing unit (sand patches) → −5</li><li>Greenheugh Pediment (sharp, jagged rock) → −15</li><li>Gediz Vallis Ridge (loose rock, boulders) → −15</li></ul></div>
+  </div>
+  <p class="note">Thresholds are the team's prototype planning values, not official NASA spacewalk limits. Coordinates, sols, elevation, temperature, UV and visibility come from the team's data sheet (Curiosity "Where is Curiosity?" map and NASA Mars Trek HiRISE DEM). Radiation uses Curiosity RAD's surface average of about 0.67 mSv/day. Walking time assumes 2 km/h in a suit. Distances are straight lines between stops, so the real walk is longer.</p>
+</section>
+
+<script src="script.js"></script>
+</body>
 </html>
