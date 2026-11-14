@@ -1,1 +1,28 @@
+/* Color Palette 
+    Dark Pink: A34F5D
+    Cream: E6C8A2
+    Light Pink: D99386
+    Brown: 8E5E4A
+    Dark Purple: 473445
+    */
 
+body {
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    line-height: 1.5;
+    background-color: #edd5b4;
+    margin: 0;
+    padding: 0;
+}
+.map{
+    background-color: #473445;
+    border: 1px solid #ccc;
+    height: 450px;
+    margin: 5% 5%;
+
+}
+.info{
+   display: flex;
+   justify-content: space-evenly;
+   flex-wrap: wrap;
+
+}
