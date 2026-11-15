@@ -1,20 +1,3 @@
-
-/* ==========================================================================
-   MARSWALK ROUTE GUIDE
- 
-   VOICE:   a crew tablet on Mars: calm, exact, readable in a glove.
-   IDEA:    the waypoint tracker on an astronaut's suit tablet: pick a stop,
-            see how far, how cold, how safe.
-   PICTURE: a top-down route map of lower Mount Sharp with the three geologic
-            units, a dashed tracker line from YOU to the target.
-   COLOUR:  Martian rust ground, unit colours from the NASA map
-            (clay green, pediment teal, ridge red).
-   TYPE:    Fraunces (headings, big numbers) + DM Sans (everything else).
-   LAYOUT:  map left, target card with three gauges right; elevation profile,
-            waypoint table and the safety formula below.
-   ========================================================================== */
- 
- 
 /* --------------------------------------------------------------------------
    1. Variables and theme
    -------------------------------------------------------------------------- */
