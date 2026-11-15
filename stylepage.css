@@ -8,9 +8,8 @@
      Dark Pink  #A34F5D   Cream       #E6C8A2   Light Pink #D99386
      Brown      #8E5E4A   Dark Purple #473445
      Extra shades below are tints/shades of these so text stays readable. */
- 
-  /* Fonts: change these two lines to swap fonts everywhere
-     (and update the Google Fonts link in index.html to match) */
+
+  /* Fonts: change these two lines to swap fonts everywhere */
   --font-body: "DM Sans", system-ui, sans-serif;
   --font-head: "Fraunces", Georgia, serif;
  
