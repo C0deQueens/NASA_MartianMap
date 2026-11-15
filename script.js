@@ -59,9 +59,9 @@ function drawMap(){
   const vis=st.seg?D.filter(p=>p.seg===st.seg):D;
   const xs=vis.map(p=>p.x),ys=vis.map(p=>p.y);
   let x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
-  const pad=W<520?44:64,sc=Math.min((W-2*pad)/Math.max(x1-x0,150),(H-2*pad)/Math.max(y1-y0,150));
+  const pad=W<520?44:64,top=48,sc=Math.min((W-2*pad)/Math.max(x1-x0,150),(H-2*pad-top)/Math.max(y1-y0,150));
   const cx=(x0+x1)/2,cy=(y0+y1)/2;
-  const X=x=>W/2+(x-cx)*sc,Y=y=>H/2+10-(y-cy)*sc;
+  const X=x=>W/2+(x-cx)*sc,Y=y=>H/2+top/2-(y-cy)*sc;
   const step=[50,100,250,500,1000].find(v=>v*sc>=70)||1000;
   let g="";
   for(let v=Math.floor((cx-W/2/sc)/step)*step;v<cx+W/2/sc;v+=step)g+=`<line x1="${X(v)}" x2="${X(v)}" y1="0" y2="${H}" stroke="var(--grid)"/>`;
@@ -81,7 +81,7 @@ function drawMap(){
     <circle cx="${x}" cy="${y}" r="${on?15:12}" fill="${p.sf.c}" stroke="${UNIT[p.unit].c}" stroke-width="4"/>
     <text x="${x}" y="${y+5}" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">${p.i+1}</text></g>`});
   const mX=X(me.x),mY=Y(me.y);
-  const AH=42,AW=AH*209/256;   // astronaut icon size (image is 209 x 256)
+  const AH=72,AW=AH*209/256;   // astronaut icon size (image is 209 x 256)
   const you=`<image href="astronaut.png" x="${mX-AW/2}" y="${mY-17-AH}" width="${AW}" height="${AH}" pointer-events="none" style="filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))"><title>You are here</title></image>`;
   const sb=step*sc;
   const scale=`<g transform="translate(16 ${H-22})"><rect width="${sb}" height="6" fill="var(--ink)"/><text y="-6" font-size="13" fill="var(--mute)">${km(step)}</text></g>
@@ -141,7 +141,7 @@ function fix(){if(st.seg&&D[st.sel].seg!==st.seg)st.seg=D[st.sel].seg}
 function drawProf(){
   const s=$("prof"),W=s.clientWidth,H=s.clientHeight;if(!W)return;
   const l=W<520?46:62,rr=18,tp=18,b=34;
-  const e0=Math.min(...D.map(p=>p.el))-20,e1=Math.max(...D.map(p=>p.el))+90;
+  const e0=Math.min(...D.map(p=>p.el))-20,e1=Math.max(...D.map(p=>p.el))+150;
   const X=v=>l+v/TOTAL*(W-l-rr),Y=v=>tp+(e1-v)/(e1-e0)*(H-tp-b);
   let g="";
   for(let v=Math.ceil(e0/100)*100;v<=e1;v+=100)g+=`<line x1="${l}" x2="${W-rr}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${l-6}" y="${Y(v)+4}" text-anchor="end" font-size="13" fill="var(--mute)">${W<520?v/1000+"k":v}</text>`;
@@ -150,7 +150,7 @@ function drawProf(){
   let ln="";D.forEach((p,i)=>{if(i){const q=D[i-1];ln+=`<line x1="${X(q.cum)}" y1="${Y(q.el)}" x2="${X(p.cum)}" y2="${Y(p.el)}" stroke="${SEG[p.seg].c}" stroke-width="4" stroke-linecap="round"/>`}});
   const pts=D.map(p=>`<circle data-i="${p.i}" cx="${X(p.cum)}" cy="${Y(p.el)}" r="${p.i===st.sel?9:6}" fill="${p.sf.c}" stroke="var(--panel)" stroke-width="2" style="cursor:pointer"/>`).join("");
   const me=D[st.me];
-  const ph=28,pw=ph*209/256;
+  const ph=52,pw=ph*209/256;
   s.innerHTML=g+ln+pts+`<image href="astronaut.png" x="${Math.min(Math.max(X(me.cum)-pw/2,l),W-rr-pw)}" y="${Y(me.el)-11-ph}" width="${pw}" height="${ph}" pointer-events="none" style="filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))"><title>You are here</title></image>`;
 }
 $("prof").addEventListener("click",e=>{const c=e.target.closest("[data-i]");if(c){st.sel=+c.dataset.i;fix();render()}});
@@ -161,5 +161,6 @@ new ResizeObserver(()=>{drawMap();drawProf()}).observe($("mapBox"));
 new ResizeObserver(drawProf).observe($("prof"));
 render();
 }
+ 
  
  

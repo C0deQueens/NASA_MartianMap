@@ -32,12 +32,12 @@
   --font-head: "Fraunces", Georgia, serif;
  
   /* Surfaces and text (light, dark) */
-  --bg:    light-dark(#E6C8A2, #2B1F2A);   /* cream / deep purple */
-  --panel: light-dark(#F5E7D3, #473445);   /* light cream / dark purple */
+  --bg:    light-dark(#E8BDB2, #33212F);   /* soft pink / deep plum */
+  --panel: light-dark(#FAEDE6, #473445);   /* blush / dark purple */
   --ink:   light-dark(#473445, #E6C8A2);   /* dark purple / cream */
   --mute:  light-dark(#6B4636, #D99386);   /* deep brown / light pink */
-  --line:  light-dark(#CFAE88, #6B506A);
-  --grid:  light-dark(#ECD6B8, #583F56);
+  --line:  light-dark(#D9A99C, #6B506A);
+  --grid:  light-dark(#F1D6CC, #583F56);
  
   /* Accent (kept the name --rust so the rest of the code still works) */
   --rust: #A34F5D;                          /* dark pink */
@@ -233,7 +233,7 @@ button:focus-visible {
 }
  
 .prof {
-  min-height: 200px;
+  min-height: 240px;
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 16px;
